@@ -1,0 +1,12 @@
+[features]
+seeds = false
+skip-lint = false
+[programs.testnet]
+defios_anchor = "2jBpaAC79KdXVL6TaYkRRGzADBrc8nVPN1K2pfbqgfV9"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "testnet"
+wallet = "/home/priyeshsriv/.config/solana/id.json"
