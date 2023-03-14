@@ -109,7 +109,8 @@ Anchor-spl: https://crates.io/crates/anchor-spl)
 #### Code Formatting
 
 The project uses the default rustfmt cli command with no additional customisations to format the code, please format any pull requests you make in the same formatting style.
- ---
+
+---
 #### Issue Reporting
  
 Please mention all steps to reproduce the issue, link any custom code that led to the issue, and mention any CLI errors you got within the issue itself.
