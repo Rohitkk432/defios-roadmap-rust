@@ -3,8 +3,8 @@ use anchor_spl::token::{transfer, Token, TokenAccount, Transfer};
 
 use crate::{
     error::DefiOSError,
-    state::{Objective},
-    ObjectiveState::InProgress
+    state::{Objective, StakeOnObjectiveEvent},
+    ObjectiveState::InProgress,
 };
 
 #[derive(Accounts)]
@@ -19,14 +19,14 @@ pub struct StakeObjective<'info> {
     pub objective_staker_token_account: Account<'info, TokenAccount>,
 
     #[account(mut)]
-    pub objective_account: Account<'info,Objective>,
+    pub objective_account: Account<'info, Objective>,
 
     pub system_program: Program<'info, System>,
     pub token_program: Program<'info, Token>,
 }
 
 pub fn handler(ctx: Context<StakeObjective>, transfer_amount: u64) -> Result<()> {
-    let objective_staker =  &mut ctx.accounts.objective_staker;
+    let objective_staker = &mut ctx.accounts.objective_staker;
     let objective_staker_token_account = &mut ctx.accounts.objective_staker_token_account;
     let objective_account = &mut ctx.accounts.objective_account;
 
@@ -37,7 +37,7 @@ pub fn handler(ctx: Context<StakeObjective>, transfer_amount: u64) -> Result<()>
     );
 
     require!(
-        objective_account.objective_state==InProgress,
+        objective_account.objective_state == InProgress,
         DefiOSError::ObjectiveClosedAlready
     );
 
@@ -45,16 +45,20 @@ pub fn handler(ctx: Context<StakeObjective>, transfer_amount: u64) -> Result<()>
 
     // to do, optimise for loops
     for (i, staker) in objective_account.objective_staker_ids.iter().enumerate() {
-        if *staker==objective_staker.key() {
+        if *staker == objective_staker.key() {
             objective_account.objective_staker_amts[i] += transfer_amount;
             ispresent = true;
-            break
+            break;
         }
-    };
+    }
 
     if ispresent {
-        objective_account.objective_staker_ids.push(objective_staker.key());
-        objective_account.objective_staker_amts.push(transfer_amount);
+        objective_account
+            .objective_staker_ids
+            .push(objective_staker.key());
+        objective_account
+            .objective_staker_amts
+            .push(transfer_amount);
     }
 
     transfer(
@@ -69,5 +73,9 @@ pub fn handler(ctx: Context<StakeObjective>, transfer_amount: u64) -> Result<()>
         transfer_amount,
     )?;
 
+    emit!(StakeOnObjectiveEvent {
+        objective_pub_key: objective_account.key(),
+        staked_by: objective_staker.key()
+    });
     Ok(())
 }
