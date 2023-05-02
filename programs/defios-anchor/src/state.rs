@@ -91,3 +91,34 @@ impl Objective {
         160 //objective_staker_amts
     }
 }
+
+#[event]
+pub struct AddChildObjectiveEvent {
+    pub parent_account: Pubkey,
+    pub added_by: Pubkey
+}
+
+#[event]
+pub struct AddObjectiveDataEvent {
+    pub objective_title: String,
+    pub objective_metadata_uri: String,
+    pub objective_start_unix: u64,
+    pub objective_creation_unix: u64,
+    pub objective_end_unix: u64,
+    pub objective_deliverable: String,
+    pub objective_public_key: Pubkey
+}
+
+#[event]
+pub struct AddRoadmapDataEvent {
+    pub roadmap_title: String,
+    pub roadmap_description_link: String,
+    pub roadmap_creation_unix: u64,
+    pub roadmap_creator: Pubkey
+}
+
+#[event]
+pub struct StakeOnObjectiveEvent {
+    pub objective_pub_key: Pubkey,
+    pub staked_by: Pubkey
+}
